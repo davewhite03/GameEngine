@@ -41,7 +41,6 @@ namespace GameEngine
             ElementBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(0);
             GL.BindVertexArray(0);
 
             UpdateProjectionMatrix(ClientSize.X, ClientSize.Y);
@@ -51,6 +50,12 @@ namespace GameEngine
          protected override void OnUnload()
         {
             shader.Dispose();
+
+            GL.DeleteBuffer(VertexArrayObject);
+            GL.DeleteBuffer(VertexBufferObject);
+            GL.DeleteBuffer(ElementBufferObject);
+
+            base.OnUnload();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

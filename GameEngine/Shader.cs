@@ -88,7 +88,6 @@ namespace GameEngine
             }
         }
 
-
         public void Dispose()
         {
             Dispose(true);

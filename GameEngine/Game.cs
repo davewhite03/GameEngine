@@ -1,4 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using GameEngine.ECS;
+using GameEngine.ECS.Components;
+using GameEngine.Rendering;
+using GameEngine.Resources;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -9,10 +13,12 @@ namespace GameEngine
     public class Game : GameWindow
     {
         Shader shader;
+        public Shader MainShader;
         Matrix4 projectionMatrix;
         int VertexBufferObject;
         int VertexArrayObject;
         int ElementBufferObject;
+        private Scene currentScene;
 
         public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
         {
@@ -25,35 +31,44 @@ namespace GameEngine
             base.OnLoad();
             
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            shader = new Shader("C:\\GameEngine\\GameEngine\\Shader.vert", "C:\\GameEngine\\GameEngine\\Shader.frag");
+            MainShader = new Shader("C:\\GameEngine\\GameEngine\\Shader.vert", "C:\\GameEngine\\GameEngine\\Shader.frag");
            
-            VertexArrayObject = GL.GenVertexArray(); 
-            GL.BindVertexArray(VertexArrayObject);
+           ContentManager contentManager = new ContentManager();
+            contentManager.SetAsMain();
+            
+            contentManager.InitializeEngineResources();
 
-            VertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-
-            ElementBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
-            GL.BindVertexArray(0);
+            contentManager.LoadShader("sprite", "C:\\GameEngine\\GameEngine\\Shader.vert", "C:\\GameEngine\\GameEngine\\Shader.frag");
 
             UpdateProjectionMatrix(ClientSize.X, ClientSize.Y);
+
+            currentScene = new Scene();
+
+            Entity player = currentScene.CreateEntity("Player");
+
+
+            Transform playerTransform = player.AddComponent<Transform>();
+            playerTransform.Position = new Vector2(0,0);
+
+            SpriteRenderer playerSprite = player.AddComponent<SpriteRenderer>();
+
+            
+            playerSprite.Texture = contentManager.LoadTexture("player", "C:\\GameEngine\\GameEngine\\Assets\\Player.png");
+
+            RigidBody rigidBody = player.AddComponent<RigidBody>();
+            rigidBody.Mass = 1.0f;
+
+            BoxCollider playerCollider = player.AddComponent<BoxCollider>();
+            playerCollider.Size = new Vector2(1.0f, 1.0f);
 
         }
 
          protected override void OnUnload()
         {
-            shader.Dispose();
-
-            GL.DeleteBuffer(VertexArrayObject);
-            GL.DeleteBuffer(VertexBufferObject);
-            GL.DeleteBuffer(ElementBufferObject);
+           if(ContentManager.Main != null)
+            {
+                ContentManager.Main.Dispose();
+            }
 
             base.OnUnload();
         }
@@ -62,13 +77,15 @@ namespace GameEngine
         {
             base.OnRenderFrame(e);
 
+
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            shader.Use();
- 
-            GL.BindVertexArray(VertexArrayObject);
- 
-            GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
+
+            MainShader.Use();
+
+            MainShader.SetMatrix4("projection", projectionMatrix);
+
+            currentScene.Render();
 
             SwapBuffers();
         }
@@ -89,9 +106,35 @@ namespace GameEngine
             {
                 Close();
             }
-            if (KeyboardState.IsKeyDown(Keys.Up))
+
+            float deltaTime = (float)e.Time;
+            HandlerPlayerInput(deltaTime);
+            currentScene.Update(deltaTime);
+           
+        }
+
+        public void HandlerPlayerInput(float deltaTime)
+        {
+            Entity playerEntity = currentScene.FindEntityByName("Player");
+            if (playerEntity != null)
             {
-                
+                Console.WriteLine("player entity found!");
+                RigidBody rb = playerEntity.GetComponent<RigidBody>();
+                if (rb != null)
+                {
+                    Vector2 force = Vector2.Zero;
+
+                    if (KeyboardState.IsKeyDown(Keys.W))
+                        force.Y = .01f;                      
+                    if (KeyboardState.IsKeyDown(Keys.S))
+                        force.Y = -.01f;
+                    if (KeyboardState.IsKeyDown(Keys.A))
+                        force.X = -.01f;
+                    if (KeyboardState.IsKeyDown(Keys.D))
+                        force.X = .01f;
+
+                    rb.ApplyForce(force);
+                }
             }
         }
 
@@ -104,22 +147,27 @@ namespace GameEngine
                  -1.0f,1.0f
                 );
 
-            shader.SetMatrix4("projection",projectionMatrix);   
+            MainShader.SetMatrix4("projection",projectionMatrix);
+
+            Shader spriteShader = ContentManager.Main.GetSpriteShader();
+            if (spriteShader != null)
+            {
+                spriteShader.Use();
+                spriteShader.SetMatrix4("projection", projectionMatrix);
+            }
+
         }
 
-        float[] vertices = 
+        public Shader GetShader()
         {
-             0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 1.0f, 
-             0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  
-            -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  
-            -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f
-        };
+            return MainShader;
+        }
 
-        uint[] indices =
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
      
+        public int GetSpriteVAO()
+        {
+            return VertexArrayObject;
+        }
+
     }
-    }
+}

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL4;
 
-namespace GameEngine
+namespace GameEngine.Rendering
 {
     public class Shader
     {

@@ -34,7 +34,7 @@ namespace GameEngine.Rendering
             if (success == 0)
             {
                 string infoLog = GL.GetShaderInfoLog(VertexShader);
-                Console.WriteLine(infoLog);
+              
             }
 
             GL.CompileShader(FragmentShader);
@@ -43,7 +43,7 @@ namespace GameEngine.Rendering
             if (success == 0)
             {
                 string infoLog = GL.GetShaderInfoLog(FragmentShader);
-                Console.WriteLine(infoLog);
+               
             }
 
             Handle = GL.CreateProgram();
@@ -57,7 +57,7 @@ namespace GameEngine.Rendering
             if (success == 0)
             {
                 string infoLog = GL.GetProgramInfoLog(Handle);
-                Console.WriteLine(infoLog);
+                
             }
 
             GL.DetachShader(Handle, VertexShader);
@@ -84,7 +84,7 @@ namespace GameEngine.Rendering
         {
             if (disposedValue == false)
             {
-                Console.WriteLine("GPU Resource leak! Did you forget to call Dispose()?");
+             
             }
         }
 
@@ -101,7 +101,7 @@ namespace GameEngine.Rendering
             int location = GL.GetUniformLocation(Handle, name);
 
             if (location == -1) {
-                Console.WriteLine($"Warning: Uniform {name} was not found in the shader.");
+              
             }
 
             GL.UniformMatrix4(location, false, ref matrix);

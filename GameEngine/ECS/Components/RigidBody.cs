@@ -38,5 +38,9 @@ namespace GameEngine.ECS.Components
             Velocity += force / Mass;
         }
 
+        public void Stop()
+        {
+            Velocity -= Velocity;
+        }
     }
 }

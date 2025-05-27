@@ -26,7 +26,7 @@ namespace GameEngine.ECS
 
             if (existingComponent != null) {
 
-                Console.WriteLine($"Entity '{Name}' already has a component of type {typeof(T).Name}");
+                
 
                 return existingComponent;
             }

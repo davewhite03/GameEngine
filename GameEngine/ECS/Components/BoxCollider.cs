@@ -31,7 +31,7 @@ namespace GameEngine.ECS.Components
         {
             Vector2 position = transform.Position + OffSet;
             Vector2 halfSize = Size * 0.5f * transform.Scale;
-
+            
             return new RectangleF(
                 position.X - halfSize.X,
                 position.Y - halfSize.Y,

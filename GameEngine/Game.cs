@@ -1,5 +1,7 @@
 ﻿using GameEngine.ECS;
 using GameEngine.ECS.Components;
+using GameEngine.ECS.System;
+using GameEngine.ECS.Systems;
 using GameEngine.Rendering;
 using GameEngine.Resources;
 using OpenTK.Graphics.OpenGL4;
@@ -12,7 +14,12 @@ namespace GameEngine
 {
     public class Game : GameWindow
     {
-        Shader shader;
+        SystemManager systemManager;
+        CameraSystem cameraSystem;
+        Entity cameraEntity;     
+        InputSystem inputSystem;
+        MovementSystem movementSystem;
+        PhysicsSystem physicsSystem;
         public Shader MainShader;
         Matrix4 projectionMatrix;
         int VertexBufferObject;
@@ -29,7 +36,8 @@ namespace GameEngine
         {
            
             base.OnLoad();
-            
+           
+
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             MainShader = new Shader("C:\\GameEngine\\GameEngine\\Shader.vert", "C:\\GameEngine\\GameEngine\\Shader.frag");
            
@@ -40,26 +48,102 @@ namespace GameEngine
 
             contentManager.LoadShader("sprite", "C:\\GameEngine\\GameEngine\\Shader.vert", "C:\\GameEngine\\GameEngine\\Shader.frag");
 
-            UpdateProjectionMatrix(ClientSize.X, ClientSize.Y);
+           
 
             currentScene = new Scene();
+            Entity platform = currentScene.CreateEntity("Platform");
 
+
+            Transform platformTransform = platform.AddComponent<Transform>();
+            platformTransform.Scale = new Vector2(1.0f, 1.0f);
+            platformTransform.Position = new Vector2(0, -1);
+
+            SpriteRenderer platformSprite = platform.AddComponent<SpriteRenderer>();
+            
+
+            platformSprite.Texture = contentManager.LoadTexture("platform", "C:\\GameEngine\\GameEngine\\Assets\\platform.png");
+
+            RigidBody platformRigidBody = platform.AddComponent<RigidBody>();
+            platformRigidBody.Mass = 1.0f;
+
+            BoxCollider platformCollider = platform.AddComponent<BoxCollider>();
+            platformCollider.Size = new Vector2(1.0f, 1.0f);
+
+
+            Entity platform2 = currentScene.CreateEntity("Platform2");
+
+
+            Transform platformTransform2 = platform2.AddComponent<Transform>();
+            platformTransform2.Scale = new Vector2(1.0f, 1.0f);
+            platformTransform2.Position = new Vector2(-3, -1);
+
+            SpriteRenderer platformSprite2 = platform2.AddComponent<SpriteRenderer>();
+
+
+            platformSprite2.Texture = contentManager.LoadTexture("platform", "C:\\GameEngine\\GameEngine\\Assets\\platform.png");
+
+            RigidBody platformRigidBody2 = platform2.AddComponent<RigidBody>();
+            platformRigidBody.Mass = 1.0f;
+
+            BoxCollider platformCollider2 = platform2.AddComponent<BoxCollider>();
+            platformCollider.Size = new Vector2(1.0f, .5f);
+            
             Entity player = currentScene.CreateEntity("Player");
 
 
             Transform playerTransform = player.AddComponent<Transform>();
             playerTransform.Position = new Vector2(0,0);
+            
 
             SpriteRenderer playerSprite = player.AddComponent<SpriteRenderer>();
 
             
-            playerSprite.Texture = contentManager.LoadTexture("player", "C:\\GameEngine\\GameEngine\\Assets\\Player.png");
+            playerSprite.Texture = contentManager.LoadTexture("player", "C:\\GameEngine\\GameEngine\\Assets\\Jumper.png");
 
             RigidBody rigidBody = player.AddComponent<RigidBody>();
             rigidBody.Mass = 1.0f;
 
             BoxCollider playerCollider = player.AddComponent<BoxCollider>();
             playerCollider.Size = new Vector2(1.0f, 1.0f);
+            
+            PlayerMovement playerMovement = player.AddComponent<PlayerMovement>();
+            playerMovement.MoveSpeed = 1.0f;
+            playerMovement.JumpForce = 2.05f;
+
+
+            cameraEntity = currentScene.CreateEntity("MainCamera");
+            Camera mainCamera = cameraEntity.AddComponent<Camera>();
+            mainCamera.Target = player;
+            mainCamera.FollowSpeed = 3.0f;
+            mainCamera.SmoothFollow = true;
+
+
+            /*
+           Entity enemy = currentScene.CreateEntity("Enemy");
+
+
+            Transform enemyTransform = enemy.AddComponent<Transform>();
+            enemyTransform.Position = new Vector2(0, -1);
+
+            SpriteRenderer enemySprite = enemy.AddComponent<SpriteRenderer>();
+
+
+            enemySprite.Texture = contentManager.LoadTexture("enemy", "C:\\GameEngine\\GameEngine\\Assets\\Player (3).png");
+
+            RigidBody enemyRigidBody = enemy.AddComponent<RigidBody>();
+            enemyRigidBody.Mass = 1.0f;
+
+            BoxCollider enemyCollider = enemy.AddComponent<BoxCollider>();
+            enemyCollider.Size = new Vector2(0.5f, 0.5f);
+*/
+            inputSystem = new InputSystem(currentScene, KeyboardState);
+            movementSystem = new MovementSystem(currentScene);
+            systemManager = new SystemManager();
+            physicsSystem = new PhysicsSystem(currentScene);
+            cameraSystem = new CameraSystem(currentScene);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         }
 
@@ -95,8 +179,6 @@ namespace GameEngine
             base.OnFramebufferResize(e);
 
             GL.Viewport(0, 0, e.Width, e.Height);
-
-            UpdateProjectionMatrix(e.Width, e.Height);
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -108,45 +190,91 @@ namespace GameEngine
             }
 
             float deltaTime = (float)e.Time;
-            HandlerPlayerInput(deltaTime);
+            if(!CollisionDetection()) Gravity();
+
+            
+            inputSystem.Update(deltaTime);
+            movementSystem.Update(deltaTime);
+           
             currentScene.Update(deltaTime);
+            cameraSystem.Update(deltaTime);
+            UpdateProjectionMatrixWithCamera();
            
         }
-
-        public void HandlerPlayerInput(float deltaTime)
+        public void Gravity()
         {
             Entity playerEntity = currentScene.FindEntityByName("Player");
             if (playerEntity != null)
             {
-                Console.WriteLine("player entity found!");
+
                 RigidBody rb = playerEntity.GetComponent<RigidBody>();
                 if (rb != null)
                 {
+
                     Vector2 force = Vector2.Zero;
-
-                    if (KeyboardState.IsKeyDown(Keys.W))
-                        force.Y = .01f;                      
-                    if (KeyboardState.IsKeyDown(Keys.S))
-                        force.Y = -.01f;
-                    if (KeyboardState.IsKeyDown(Keys.A))
-                        force.X = -.01f;
-                    if (KeyboardState.IsKeyDown(Keys.D))
-                        force.X = .01f;
-
+                    force.Y = -.001f;
                     rb.ApplyForce(force);
+
                 }
             }
         }
-
-        protected void UpdateProjectionMatrix(int width, int height)
+        public bool CollisionDetection()
         {
-            float aspectRatio = width / (float)height;
+            List<Entity> entities = currentScene.GetEntitiesWith();
+
+            Entity playerEntity = currentScene.FindEntityByName("Player");
+            BoxCollider playerBoxCollider = playerEntity.GetComponent<BoxCollider>();
+            PlayerMovement playerMovement = playerEntity.GetComponent<PlayerMovement>();
+
+            playerMovement.IsGrounded = false;
+
+            foreach (Entity entity in entities)
+            {
+                if (entity.Name == "Player") continue;
+
+                var otherCollider = entity.GetComponent<BoxCollider>();
+
+                if (otherCollider != null && playerBoxCollider.Intersects(otherCollider))
+                {
+                    var playerPosition = playerEntity.GetComponent<Transform>();
+                    var otherPosition = entity.GetComponent<Transform>();
+
+                    if(playerPosition.Position.Y > otherPosition.Position.Y)
+                    {
+                        playerMovement.IsGrounded = true;
+
+                    }
+                    playerEntity.GetComponent<RigidBody>().Stop();
+
+                    return true;
+                } 
+            }
+            return false;
+
+
+        }
+       
+
+        protected void UpdateProjectionMatrixWithCamera()
+        {
+            Camera mainCamera = cameraEntity?.GetComponent<Camera>();
+            if (mainCamera == null) return;
+
+
+            float aspectRatio = ClientSize.X / (float)ClientSize.Y;
+
+            float viewWidth = aspectRatio / mainCamera.Zoom;
+            float viewHeight = 1.0f / mainCamera.Zoom;
+
             projectionMatrix = Matrix4.CreateOrthographicOffCenter(
-                -aspectRatio, aspectRatio,
-                -1.0f, 1.0f,
-                 -1.0f,1.0f
+                mainCamera.Position.X - viewWidth,
+                mainCamera.Position.X + viewWidth,
+                mainCamera.Position.Y - viewHeight,
+                mainCamera.Position.Y + viewHeight,
+                 -1.0f, 1.0f
                 );
 
+            MainShader.Use();
             MainShader.SetMatrix4("projection",projectionMatrix);
 
             Shader spriteShader = ContentManager.Main.GetSpriteShader();

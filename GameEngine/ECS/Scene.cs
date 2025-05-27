@@ -29,6 +29,33 @@ namespace GameEngine.ECS
 
             return null;
         }
+        public List<Entity> GetEntitiesWith<T>() where T : Component , new()
+        {
+            List<Entity> filteredEntities = new List<Entity>();
+            foreach(Entity entity in entities)
+            {
+                if(entity.GetComponent<T>() != null) filteredEntities.Add(entity);
+            }
+            return filteredEntities;
+        }
+
+        public List<Entity> GetEntitiesWith<T1, T2, T3>() 
+            where T1 : Component , new()
+            where T2 : Component , new()
+            where T3 : Component , new()
+        {
+            List<Entity> filterdEntities = new List<Entity>();
+
+            foreach (Entity entity in entities)
+            {
+                if(entity.GetComponent<T1> != null || entity.GetComponent<T2> != null || entity.GetComponent<T3> != null) filterdEntities.Add(entity);
+            }
+            return filterdEntities;
+        }
+        public List<Entity> GetEntitiesWith()
+        {
+            return this.entities;
+        }
 
         public void Destroy(Entity entity)
         {

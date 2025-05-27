@@ -42,7 +42,7 @@ namespace GameEngine.ECS.Components
             if (Color.R == 0 && Color.G == 0 && Color.B == 0 && Color.A == 0)
             {
                 Color = new Color4(1.0f, 1.0f, 1.0f, 1.0f); // Set white as default
-                Console.WriteLine("Setting default color to white");
+               
             }
 
             Matrix4 modelMatrix = transform.GetTransformationMatrix();

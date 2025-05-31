@@ -33,7 +33,17 @@ namespace GameEngine.ECS.Systems
             BoxCollider boxColliderA = entityA.GetComponent<BoxCollider>();
             BoxCollider boxColliderB = entityB.GetComponent<BoxCollider>();
 
-         
+          
+            if (entityA.GetComponent<PlayerMovement>() != null)
+            {
+                entityA.GetComponent<PlayerMovement>().IsGrounded = false;
+
+            }
+            if (entityB.GetComponent<PlayerMovement>() != null)
+            {
+
+                entityB.GetComponent<PlayerMovement>().IsGrounded = false;
+            }
             if (boxColliderA.Intersects(boxColliderB))
             {
                 HandleCollision(entityA, entityB, boxColliderA, boxColliderB);

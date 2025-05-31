@@ -12,28 +12,30 @@ namespace GameEngine.ECS.Systems
 
             var movableEntities = scene.GetEntitiesWith<PlayerInput, PlayerMovement, RigidBody>();
 
-            foreach (var entity in movableEntities) 
-            {
 
-                var input = entity.AddComponent<PlayerInput>();
-                var movement = entity.AddComponent<PlayerMovement>();
-                var rigidBody = entity.AddComponent<RigidBody>();
+            foreach (var entity in movableEntities)
+            {
+                
+                var input = entity.GetComponent<PlayerInput>();
+                var movement = entity.GetComponent<PlayerMovement>();
+                var rigidBody = entity.GetComponent<RigidBody>();
+                
 
                 Vector2 force = Vector2.Zero;
+                var targetVelocity = rigidBody.Velocity;
+                targetVelocity.X = input.MoveInput.X * movement.MoveSpeed ;
+               
 
-                force.X = input.MoveInput.X * movement.MoveSpeed * deltaTime;
-
-
-                if(input.JumpPressed && movement.IsGrounded)
+                if (input.JumpPressed && movement.IsGrounded)
                 {
-                    force.Y = movement.JumpForce;
+                    targetVelocity.Y = movement.JumpForce;
                     movement.IsGrounded = false;
                 }
 
-                rigidBody.ApplyForce(force);
-            
-            }
+               rigidBody.Velocity = targetVelocity;
 
+                
+            }
         }
     }
 }

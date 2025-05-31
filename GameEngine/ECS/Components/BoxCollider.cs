@@ -11,8 +11,18 @@ namespace GameEngine.ECS.Components
 {
     public class BoxCollider : Component
     {
-        public Vector2 Size { get; set; } = new Vector2(1.0f,1.0f);
-        public Vector2 OffSet {  get; set; } = Vector2.Zero;
+        public Vector2 Size { get; set; } = new Vector2(1.0f, 1.0f);
+        public Vector2 OffSet { get; set; } = Vector2.Zero;
+
+        
+        public enum CollisionType
+        {
+            Solid,
+            Trigger,
+            OneWay
+        }
+        public CollisionType Type { get; set; } = CollisionType.Solid;
+        public bool IsTrigger => Type == CollisionType.Trigger;
 
         Transform transform;
 

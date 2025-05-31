@@ -28,21 +28,17 @@ namespace GameEngine.ECS.System
             {
                 var input = entity.GetComponent<PlayerInput>();
                 
-                var rb = entity.GetComponent<RigidBody>();
-                Vector2 force = Vector2.Zero;
+                
+                Vector2 moveInput = Vector2.Zero;
 
-                if(_keyboardState.IsKeyPressed(Keys.A)) force.X = 1;
+                if(_keyboardState.IsKeyDown(Keys.A)) moveInput.X = -1.0f;
 
-                if(_keyboardState.IsKeyPressed(Keys.D)) force.X = -1;
-                if (_keyboardState.IsKeyReleased(Keys.D)) force.X = 1;
+                if(_keyboardState.IsKeyDown(Keys.D)) moveInput.X = 1.0f;
 
-                if (_keyboardState.IsKeyReleased(Keys.A)) force.X = -1;
+                Console.WriteLine(moveInput.X);
 
-                Console.WriteLine(force.X);
-
-
-                rb.ApplyForce(force);   
-
+              
+                input.MoveInput = moveInput;
                 input.JumpPressed = _keyboardState.IsKeyPressed(Keys.W);
 
 

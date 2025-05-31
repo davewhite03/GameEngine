@@ -48,7 +48,18 @@ namespace GameEngine.ECS
 
             foreach (Entity entity in entities)
             {
-                if(entity.GetComponent<T1> != null || entity.GetComponent<T2> != null || entity.GetComponent<T3> != null) filterdEntities.Add(entity);
+                var comp1 = entity.GetComponent<T1>();
+                var comp2 = entity.GetComponent<T2>();
+                var comp3 = entity.GetComponent<T3>();
+
+                
+
+                if (comp1 != null && comp2 != null && comp3 != null)
+                {
+                   
+                    filterdEntities.Add(entity);
+                }
+
             }
             return filterdEntities;
         }

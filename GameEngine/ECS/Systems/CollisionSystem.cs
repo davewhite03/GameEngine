@@ -33,7 +33,7 @@ namespace GameEngine.ECS.Systems
             BoxCollider boxColliderA = entityA.GetComponent<BoxCollider>();
             BoxCollider boxColliderB = entityB.GetComponent<BoxCollider>();
 
-
+         
             if (boxColliderA.Intersects(boxColliderB))
             {
                 HandleCollision(entityA, entityB, boxColliderA, boxColliderB);
@@ -77,7 +77,7 @@ namespace GameEngine.ECS.Systems
         {
             var transformA = entityA.GetComponent<Transform>();
             var transformB = entityB.GetComponent<Transform>();
-
+         
             bool aOnTop = boundsA.Y > boundsB.Y;
 
             
@@ -90,7 +90,11 @@ namespace GameEngine.ECS.Systems
                 if (rbA.Velocity.Y < 0) rbA.Velocity = new Vector2(rbA.Velocity.X, 0);
 
                 var playerMovement = entityA.GetComponent<PlayerMovement>();
-                if (playerMovement != null)  playerMovement.IsGrounded = true;
+                if (playerMovement != null) 
+                {
+                    playerMovement.IsGrounded = true;
+                    Console.WriteLine(playerMovement+"Player movement has been set");
+                }  
 
             }
             else {
@@ -100,6 +104,7 @@ namespace GameEngine.ECS.Systems
 
                 var playerMovement = entityB.GetComponent<PlayerMovement>();
                 if (playerMovement != null) playerMovement.IsGrounded = true;
+                Console.WriteLine(playerMovement + "Player movement has been set");
 
             }
 

@@ -24,13 +24,16 @@ namespace GameEngine.ECS.Systems
 
                 var entityMovement = entity.GetComponent<PlayerMovement>();
                 RigidBody rb = entity.GetComponent<RigidBody>();
-                if (rb != null & !rb.IsKinematic)
+                if (entityMovement != null)
                 {
+                    if (rb != null & !rb.IsKinematic & !entityMovement.IsGrounded)
+                    {
 
-                    Vector2 force = Vector2.Zero;
-                    force.Y = -.003f;
-                    rb.ApplyForce(force);
+                        Vector2 force = Vector2.Zero;
+                        force.Y = -.001f;
+                        rb.ApplyForce(force);
 
+                    }
                 }
             }
         } 

@@ -40,14 +40,14 @@ namespace GameEngine
            
 
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            MainShader = new Shader("C:\\GameEngine\\GameEngine\\Shader.vert", "C:\\GameEngine\\GameEngine\\Shader.frag");
+            MainShader = new Shader("Shader.vert", "Shader.frag");
            
            ContentManager contentManager = new ContentManager();
             contentManager.SetAsMain();
             
             contentManager.InitializeEngineResources();
 
-            contentManager.LoadShader("sprite", "C:\\GameEngine\\GameEngine\\Shader.vert", "C:\\GameEngine\\GameEngine\\Shader.frag");
+            contentManager.LoadShader("sprite", "Shader.vert", "Shader.frag");
 
            
 
@@ -63,7 +63,7 @@ namespace GameEngine
             SpriteRenderer platformSprite = platform.AddComponent<SpriteRenderer>();
             
 
-            platformSprite.Texture = contentManager.LoadTexture("platform", "C:\\GameEngine\\GameEngine\\Assets\\platform.png");
+            platformSprite.Texture = contentManager.LoadTexture("platform", "Assets\\platform.png");
 
             RigidBody platformRigidBody = platform.AddComponent<RigidBody>();
             platformRigidBody.Mass = 1.0f;
@@ -83,7 +83,7 @@ namespace GameEngine
             SpriteRenderer platformSprite2 = platform2.AddComponent<SpriteRenderer>();
 
 
-            platformSprite2.Texture = contentManager.LoadTexture("platform", "C:\\GameEngine\\GameEngine\\Assets\\platform.png");
+            platformSprite2.Texture = contentManager.LoadTexture("platform", "Assets\\platform.png");
 
             RigidBody platformRigidBody2 = platform2.AddComponent<RigidBody>();
             platformRigidBody2.Mass = 1.0f;
@@ -105,7 +105,7 @@ namespace GameEngine
             SpriteRenderer playerSprite = player.AddComponent<SpriteRenderer>();
 
             
-            playerSprite.Texture = contentManager.LoadTexture("player", "C:\\GameEngine\\GameEngine\\Assets\\Jumper.png");
+            playerSprite.Texture = contentManager.LoadTexture("player", "Assets\\Jumper.png");
 
             RigidBody rigidBody = player.AddComponent<RigidBody>();
             rigidBody.Mass = 1.0f;

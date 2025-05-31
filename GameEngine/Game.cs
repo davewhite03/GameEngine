@@ -70,7 +70,7 @@ namespace GameEngine
             platformRigidBody.IsKinematic = true;
 
             BoxCollider platformCollider = platform.AddComponent<BoxCollider>();
-            platformCollider.Size = new Vector2(1.0f, .5f);
+            platformCollider.Size = new Vector2(1.0f, 1.0f);
 
             
             Entity platform2 = currentScene.CreateEntity("Platform2");
@@ -87,10 +87,10 @@ namespace GameEngine
 
             RigidBody platformRigidBody2 = platform2.AddComponent<RigidBody>();
             platformRigidBody2.Mass = 1.0f;
-            platformRigidBody2.IsKinematic = true;
+           
 
             BoxCollider platformCollider2 = platform2.AddComponent<BoxCollider>();
-            platformCollider2.Size = new Vector2(1.0f, .5f);
+            platformCollider2.Size = new Vector2(1.0f, 1.0f);
             
             
             Entity player = currentScene.CreateEntity("Player");
@@ -111,11 +111,11 @@ namespace GameEngine
             rigidBody.Mass = 1.0f;
 
             BoxCollider playerCollider = player.AddComponent<BoxCollider>();
-            playerCollider.Size = new Vector2(1.0f, 1.0f);
+            playerCollider.Size = new Vector2(1.0f, .09f);
             
             PlayerMovement playerMovement = player.AddComponent<PlayerMovement>();
             playerMovement.MoveSpeed = 1.0f;
-            playerMovement.JumpForce = 1.08f;
+            playerMovement.JumpForce = 2.5f;
 
 
             cameraEntity = currentScene.CreateEntity("MainCamera");

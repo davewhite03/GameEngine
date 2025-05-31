@@ -103,7 +103,7 @@ namespace GameEngine.ECS.Systems
                 if (playerMovement != null) 
                 {
                     playerMovement.IsGrounded = true;
-                    Console.WriteLine(playerMovement+"Player movement has been set");
+                   
                 }  
 
             }
@@ -114,7 +114,7 @@ namespace GameEngine.ECS.Systems
 
                 var playerMovement = entityB.GetComponent<PlayerMovement>();
                 if (playerMovement != null) playerMovement.IsGrounded = true;
-                Console.WriteLine(playerMovement + "Player movement has been set");
+             
 
             }
 

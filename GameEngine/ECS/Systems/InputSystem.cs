@@ -35,7 +35,7 @@ namespace GameEngine.ECS.System
 
                 if(_keyboardState.IsKeyDown(Keys.D)) moveInput.X = 1.0f;
 
-                Console.WriteLine(moveInput.X);
+             
 
               
                 input.MoveInput = moveInput;

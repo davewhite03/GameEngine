@@ -26,10 +26,12 @@ namespace GameEngine.ECS.Systems
                 targetVelocity.X = input.MoveInput.X * movement.MoveSpeed ;
                
 
-                if (input.JumpPressed && movement.IsGrounded)
+                if (input.JumpPressed )
                 {
                     targetVelocity.Y = movement.JumpForce;
                     movement.IsGrounded = false;
+
+                    Console.Write("Jump Pressed!!!!!");
                 }
 
                rigidBody.Velocity = targetVelocity;

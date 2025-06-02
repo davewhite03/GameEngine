@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GameEngine.Resources;
 
 namespace GameEngine.ECS
 {
@@ -15,6 +16,7 @@ namespace GameEngine.ECS
             this.scene = scene;
         }
         public abstract void Update(float deltaTime);
+        
 
         public virtual void Initialize() { }
 

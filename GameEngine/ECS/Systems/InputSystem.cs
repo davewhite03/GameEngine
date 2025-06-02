@@ -31,15 +31,34 @@ namespace GameEngine.ECS.System
                 
                 Vector2 moveInput = Vector2.Zero;
 
-                if(_keyboardState.IsKeyDown(Keys.A)) moveInput.X = -1.0f;
+                if (_keyboardState.IsKeyDown(Keys.A)) { 
+                    
+                    moveInput.X = -1.0f;
+                    input.Moves.Add("A");
+                }
+                if (!_keyboardState.IsAnyKeyDown) 
+                {
+                    input.Moves.Add("None");
+                }
+                if(_keyboardState.IsKeyDown(Keys.D))
+                {
 
-                if(_keyboardState.IsKeyDown(Keys.D)) moveInput.X = 1.0f;
+                    moveInput.X = 1.0f;
+                    input.Moves.Add("D");
+                }
 
-             
 
-              
+
+
+
                 input.MoveInput = moveInput;
-                input.JumpPressed = _keyboardState.IsKeyPressed(Keys.W);
+
+                if (_keyboardState.IsKeyDown(Keys.W))
+                {
+                   input.JumpPressed = _keyboardState.IsKeyPressed(Keys.W);
+                    input.Moves.Add("W");
+                }
+                    
 
 
             }

@@ -16,7 +16,12 @@ namespace GameEngine.ECS.Components
         public Color4 Color { get; set; }
 
         private Transform transform;
+        public int CurrentFrame { get; set; } = 0;
+      
+        public int GridWidth { get; set; } = 1;       
+        public int GridHeight { get; set; } = 1;    
 
+      
 
         public override void Initialize()
         {
@@ -55,7 +60,9 @@ namespace GameEngine.ECS.Components
 
             shader.SetVector3("spriteColor", new Vector3(Color.R, Color.G, Color.B));
 
-            
+            CalculateAndSetFrameUniforms(shader);
+
+
             GL.BindVertexArray(ContentManager.Main.GetQuadVAO());
 
             GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
@@ -65,7 +72,25 @@ namespace GameEngine.ECS.Components
            
 
         }
+        private void CalculateAndSetFrameUniforms(Shader shader)
+        {
+            // Convert frame number to grid coordinates
+            int frameX = CurrentFrame % GridWidth;   // Column (0 or 1 for 2x2)
+            int frameY = CurrentFrame / GridWidth;   // Row (0 or 1 for 2x2)
 
-        
+            // Calculate frame size and offset
+            float frameScaleX = 1.0f / GridWidth;    // 0.5 for 2x2
+            float frameScaleY = 1.0f / GridHeight;   // 0.5 for 2x2
+            float frameOffsetX = frameX * frameScaleX; // 0.0 or 0.5
+            float frameOffsetY = frameY * frameScaleY; // 0.0 or 0.5
+
+            // Send to shader
+            shader.SetFloat("frameOffsetX", frameOffsetX);
+            shader.SetFloat("frameOffsetY", frameOffsetY);
+            shader.SetFloat("frameScaleX", frameScaleX);
+            shader.SetFloat("frameScaleY", frameScaleY);
+        }
+
+
     }
 }

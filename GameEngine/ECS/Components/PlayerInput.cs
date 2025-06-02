@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace GameEngine.ECS.Components
 {
@@ -14,5 +15,8 @@ namespace GameEngine.ECS.Components
         public bool JumpPressed { get; set; } = false;
 
         public bool JumpHeld { get; set; } = false;
+
+        public List<string> Moves = new List<string>();   
+        
     }
 }

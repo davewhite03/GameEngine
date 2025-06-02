@@ -15,6 +15,8 @@ namespace GameEngine
     public class Game : GameWindow
     {
         SystemManager systemManager;
+        ContentManager contentManager;
+        AnimationSystem animationSystem;
         CameraSystem cameraSystem;
         Entity cameraEntity;     
         CollisionSystem collisionSystem;    
@@ -42,7 +44,7 @@ namespace GameEngine
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             MainShader = new Shader("Shader.vert", "Shader.frag");
            
-           ContentManager contentManager = new ContentManager();
+            contentManager = new ContentManager();
             contentManager.SetAsMain();
             
             contentManager.InitializeEngineResources();
@@ -103,9 +105,11 @@ namespace GameEngine
 
 
             SpriteRenderer playerSprite = player.AddComponent<SpriteRenderer>();
+            playerSprite.GridWidth = 2;  
+            playerSprite.GridHeight = 2;
+            playerSprite.CurrentFrame = 0;
 
-            
-            playerSprite.Texture = contentManager.LoadTexture("player", "Assets\\Jumper.png");
+            playerSprite.Texture = contentManager.LoadTexture("player", "Assets\\Idle Right.png");
 
             RigidBody rigidBody = player.AddComponent<RigidBody>();
             rigidBody.Mass = 1.0f;
@@ -144,11 +148,14 @@ namespace GameEngine
             enemyCollider.Size = new Vector2(0.5f, 0.5f);
 */
             inputSystem = new InputSystem(currentScene, KeyboardState);
+            animationSystem = new AnimationSystem(currentScene, contentManager);
             collisionSystem = new CollisionSystem(currentScene);
             movementSystem = new MovementSystem(currentScene);
             systemManager = new SystemManager();
             physicsSystem = new PhysicsSystem(currentScene);
             cameraSystem = new CameraSystem(currentScene);
+
+          
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -175,6 +182,7 @@ namespace GameEngine
 
             MainShader.Use();
 
+
             MainShader.SetMatrix4("projection", projectionMatrix);
 
             currentScene.Render();
@@ -198,15 +206,17 @@ namespace GameEngine
             }
 
             float deltaTime = (float)e.Time;
-
-           
             
+           
+          
+
             inputSystem.Update(deltaTime);
             
             movementSystem.Update(deltaTime);
             physicsSystem.Update(deltaTime);
 
             collisionSystem.Update(deltaTime);
+            animationSystem.Update(deltaTime);
             currentScene.Update(deltaTime);
             
             cameraSystem.Update(deltaTime);

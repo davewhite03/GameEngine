@@ -125,10 +125,17 @@ namespace GameEngine.Rendering
             GL.Uniform1(GL.GetUniformLocation(Handle, name), value);
         }
 
+        public void SetVector2(string name, OpenTK.Mathematics.Vector2 value)
+        {
+            Use();
+            GL.Uniform2(GL.GetUniformLocation(Handle, name), value);
+        }
         public void SetVector3(string name, OpenTK.Mathematics.Vector3 value)
         {
             Use();
             GL.Uniform3(GL.GetUniformLocation(Handle, name), value);
         }
+
+
     }
 }

@@ -86,16 +86,16 @@ namespace GameEngine.ECS.Systems
                 switch (animationName)
                 {
                     case "walkRight":
-                        sprite.Texture = _contentManager.LoadTexture("playerWalkingright", "Assets\\WalkRight.png");
+                        sprite.Texture = _contentManager.LoadTexture("playerWalkingright", "Assets\\Main Guy Walk.png");
                         break;
                     case "walkLeft":
-                        sprite.Texture = _contentManager.LoadTexture("playerwalkingleft", "Assets\\WalkLeft.png");
+                        sprite.Texture = _contentManager.LoadTexture("playerwalkingleft", "Assets\\Main Guy Walk Right.png");
                         break;
                     case "jumpLeft":
-                        sprite.Texture = _contentManager.LoadTexture("playerjumpleft", "Assets\\Jump Left.png");
+                        sprite.Texture = _contentManager.LoadTexture("playerjumpleft", "Assets\\Main Guy Jump Left.png");
                         break;
                     case "jumpRight":
-                        sprite.Texture = _contentManager.LoadTexture("playerjumpright", "Assets\\Jump Right.png");
+                        sprite.Texture = _contentManager.LoadTexture("playerjumpright", "Assets\\Main Guy Jump Right.png");
                         break;
                 }
 

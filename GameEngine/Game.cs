@@ -109,7 +109,7 @@ namespace GameEngine
             playerSprite.GridHeight = 2;
             playerSprite.CurrentFrame = 0;
 
-            playerSprite.Texture = contentManager.LoadTexture("player", "Assets\\Idle Right.png");
+            playerSprite.Texture = contentManager.LoadTexture("player", "Assets\\Main Guy Idle Right.png");
 
             RigidBody rigidBody = player.AddComponent<RigidBody>();
             rigidBody.Mass = 1.0f;
